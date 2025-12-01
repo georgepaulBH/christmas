@@ -1,0 +1,81 @@
+import base64
+from pathlib import Path
+
+import streamlit as st
+
+CORRECT_ANSWER = "an agreed scope and no change requests"
+
+st.set_page_config(page_title="Advisory Christmas", page_icon="🎄", layout="centered")
+
+
+def set_background(png_file: str) -> None:
+    file_path = Path(png_file)
+    with open(file_path, "rb") as f:
+        data = f.read()
+    encoded = base64.b64encode(data).decode()
+
+    css = f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/png;base64,{encoded}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #111827;
+    }}
+    h1, h2, h3, h4, h5, h6, p, label, .stMarkdown, .stTextInput > label {{
+        color: #111827 !important;
+    }}
+    .santa-frame img {{
+        border-radius: 18px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        border: 3px solid rgba(15, 23, 42, 0.7);
+    }}
+    </style>
+    """
+    st.markdown(css, unsafe_allow_html=True)
+
+
+# Full-page snowy background
+set_background("Snow.png")  # Snow.png in same folder as app.py [web:70][web:72][web:76]
+
+st.title("Happy Christmas to all of Advisory 🎄")
+st.write("From your favourite Santa in digital advisory.")
+
+# Track last status
+if "last_status" not in st.session_state:
+    st.session_state.last_status = "neutral"
+
+base_path = Path(__file__).parent
+
+# Decide which image to show:
+# - default & wrong answers: normal Santa
+# - correct answer: thumbs-up Santa
+if st.session_state.last_status == "approved":
+    image_path = base_path / "santa_thumbs_up.png"
+    caption = "Santa approves: let's deliver! Merry Christmas!"
+else:
+    image_path = base_path / "santa_ok.png"
+    caption = "Santa (Advisory Edition)"
+
+st.markdown('<div class="santa-frame">', unsafe_allow_html=True)
+st.image(str(image_path), caption=caption, width="stretch")
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.subheader("What would you like for Christmas (Advisory edition)?")
+
+wish = st.text_input(
+    "Type your wish here:",
+    placeholder="e.g. A new bike",
+)
+
+#An agreed scope and no change requests
+
+if st.button("Ask Santa"):
+    if wish.strip().lower() == CORRECT_ANSWER:
+        st.session_state.last_status = "approved"
+        st.success("Approved. Let's deliver.")
+    else:
+        st.session_state.last_status = "neutral"
+        st.error("No, that's out of scope. Ask again for something more reasonable.")
+    st.rerun()
