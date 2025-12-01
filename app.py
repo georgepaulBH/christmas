@@ -58,7 +58,7 @@ st.markdown(
 
 st.write(
     "Santa has been seconded into the Advisory team this year. "
-    "He’s happy to talk risk, resilience and roadmaps..."
+    "He’s happy to talk delivery, CPO, and Riyadh Expo..."
 )
 
 # Track last status
@@ -72,7 +72,7 @@ base_path = Path(__file__).parent
 # - correct answer: thumbs-up Santa
 if st.session_state.last_status == "approved":
     image_path = base_path / "santa_thumbs_up.png"
-    caption = "Santa approves the business case – let’s deliver! 🎁"
+    caption = "Santa approves the business case – let’s deliver! Merry Christmas to everyone 🎁"
 else:
     image_path = base_path / "santa_ok.png"
     caption = "Santa (Advisory Edition) – calmly reviewing your scope."
