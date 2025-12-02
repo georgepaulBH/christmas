@@ -45,6 +45,16 @@ def set_background(png_file: str) -> None:
     [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {{
         color: #111827 !important;
     }}
+    .stButton > button {{
+        background-color: #e5e7eb  !important;
+        color: #111827 !important;
+        border-radius: 999px;
+        border: none;
+        font-weight: 600;
+    }}
+    .stButton > button:hover {{
+        filter: brightness(1.08);
+    }}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
@@ -60,7 +70,7 @@ def extract_features(text: str) -> dict:
         "digital", "data", "ai", "ml", "analytics", "resilience",
         "vegetation", "risk", "grid",
     ]
-    fun_words = ["bonus", "holiday", "bike", "ps5", "champagne", "apres", "après"]
+    fun_words = ["bonus", "holiday", "bike", "dogs", "champagne", "apres", "après"]
 
     buzz_count = sum(1 for b in buzzwords if b in t)
     fun_count = sum(1 for f in fun_words if f in t)
@@ -94,17 +104,7 @@ def ml_score(features: dict) -> float:
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
 
-res = st.session_state.last_result
-
-# Background from latest result
-if res and res["approved"]:
-    background_image = "Apres.png"
-else:
-    background_image = "Snow.png"
-
-set_background(background_image)
-
-# ---------- Top content & photo ----------
+# ---------- Input and button FIRST ----------
 st.title("Happy Christmas Advisory 🎄")
 st.markdown(
     "<p class='tagline'>Buro Happold | Advisory AI‑assisted Christmas scoping.</p>",
@@ -112,26 +112,8 @@ st.markdown(
 )
 
 st.write(
-    "Santa has been seconded into the Advisory team this year. "
-    "He’s brought an AI model that scores how deliverable your wish really is."
+    "Santa has been seconded into the Advisory team this year and brought an AI model that scores how deliverable your wish really is."
 )
-
-base_path = Path(__file__).parent
-
-# Santa image based on latest result
-if res and res["approved"]:
-    image_path = base_path / "santa_thumbs_up.png"
-    caption = "Santa approves the business case – see you at après! 🎁"
-else:
-    image_path = base_path / "santa_ok.png"
-    caption = "Santa (Advisory Edition) – calmly reviewing your scope."
-
-st.markdown('<div class="santa-frame">', unsafe_allow_html=True)
-st.image(str(image_path), caption=caption, width="stretch")
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------- Input section (under the photo) ----------
-st.subheader("What would you like for Christmas (Advisory edition)?")
 
 wish = st.text_input(
     "Type your wish here:",
@@ -162,7 +144,31 @@ if clicked:
         "features": feats,
         "score": score,
     }
-    res = st.session_state.last_result  # use new result immediately
+
+# Use the latest result (including one just computed)
+res = st.session_state.last_result
+
+# ---------- Background from latest result ----------
+if res and res["approved"]:
+    background_image = "Apres.png"
+else:
+    background_image = "Snow.png"
+
+set_background(background_image)
+
+base_path = Path(__file__).parent
+
+# ---------- Santa image based on latest result ----------
+if res and res["approved"]:
+    image_path = base_path / "santa_thumbs_up.png"
+    caption = "Santa approves the business case – see you at après! 🎁"
+else:
+    image_path = base_path / "santa_ok.png"
+    caption = "Santa (Advisory Edition) – calmly reviewing your scope."
+
+st.markdown('<div class="santa-frame">', unsafe_allow_html=True)
+st.image(str(image_path), caption=caption, width="stretch")
+st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Results section ----------
 if res:
