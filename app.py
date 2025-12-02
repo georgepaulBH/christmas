@@ -46,24 +46,30 @@ def set_background(png_file: str) -> None:
     st.markdown(css, unsafe_allow_html=True)
 
 
-# Full-page snowy background
-set_background("Snow.png")  # Snow.png in same folder as app.py [web:70][web:72][web:76]
+# ---- State & background choice ----
+if "last_status" not in st.session_state:
+    st.session_state.last_status = "neutral"
 
-st.title("Happy Christmas Advisory 🎄")
+# Default background = Snow; after correct answer = Apres
+if st.session_state.last_status == "approved":
+    background_image = "Apres.png"   # apres-ski / party scene
+else:
+    background_image = "Snow.png"    # initial snowy scene
+
+set_background(background_image)
+
+# ---- Content ----
+st.title("Happy Christmas to Advisory 🎄")
 
 st.markdown(
-    "<p class='tagline'>Buro Happold – now taking Christmas requests.</p>",
+    "<p class='tagline'>Buro Happold | Advisory – now taking Christmas requests.</p>",
     unsafe_allow_html=True,
 )
 
 st.write(
     "Santa has been seconded into the Advisory team this year. "
-    "He’s happy to talk delivery, CPO, and Riyadh Expo..."
+    "He’s happy to talk risk, resilience and roadmaps, but he still cares about scope."
 )
-
-# Track last status
-if "last_status" not in st.session_state:
-    st.session_state.last_status = "neutral"
 
 base_path = Path(__file__).parent
 
@@ -72,10 +78,10 @@ base_path = Path(__file__).parent
 # - correct answer: thumbs-up Santa
 if st.session_state.last_status == "approved":
     image_path = base_path / "santa_thumbs_up.png"
-    caption = "Santa approves the business case – let’s deliver! Merry Christmas to everyone 🎁"
+    caption = "Santa approves the business case – see you at après! 🎁"
 else:
     image_path = base_path / "santa_ok.png"
-    caption = "Santa (Advisory Edition) – calmly reviewing your scope."
+    caption = "Santa (Advisory Edition) – calmly reviewing your scope. 🎅"
 
 st.markdown('<div class="santa-frame">', unsafe_allow_html=True)
 st.image(str(image_path), caption=caption, width="stretch")
@@ -85,7 +91,7 @@ st.subheader("What would you like for Christmas (Advisory edition)?")
 
 wish = st.text_input(
     "Type your wish here:",
-    placeholder="e.g. 'a new bike' or 'a fully funded roadmap'",
+    placeholder="e.g. An agreed scope and no change requests",
 )
 
 st.markdown(
@@ -97,11 +103,11 @@ st.markdown(
 if st.button("Ask Santa"):
     if wish.strip().lower() == CORRECT_ANSWER:
         st.session_state.last_status = "approved"
-        st.success("Approved. Let's deliver – on time, on budget, and in scope.")
+        st.success("Approved. Let's deliver – then go to après.")
     else:
         st.session_state.last_status = "neutral"
         st.error(
-            "👎 No, that's out of scope. Please resubmit with a more Advisory‑appropriate ask "
+            "No, that's out of scope. Please resubmit with a more Advisory‑appropriate ask "
             "(hint: think scope, change and funding, not bikes)."
         )
     st.rerun()
